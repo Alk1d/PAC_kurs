@@ -3,12 +3,14 @@ import { Layout } from "../../components/layouts"
 import './booksPageStyles.scss'
 import { Button, Dialog, DropDown, BooksList, TextField } from '../../components';
 import { Book, Author, Genre } from '../../types/models';
+import { DropDownItem } from '../../components/dropDown/DropDownProps';
 import { PencilIcon, PlusIcon, TrashIcon, UploadIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxToolkitHooks';
 import { useNavigate } from 'react-router-dom';
 import { RoutesPaths } from '../../constants/commonConstants';
 import { getBooks, addBook, editBook, deleteBook, addGenre, editGenre, deleteGenre, addAuthor, editAuthor, deleteAuthor  } 
     from '../../services';
+import { GenresList } from '../../components/genresList';
 
 export const BooksPage: FC = () => {
     const { role, accessToken } = useAppSelector((state) => state.user);
@@ -20,14 +22,18 @@ export const BooksPage: FC = () => {
     const [showBookDialog, setShowBookDialog] = useState(false);
     const [bookActionMode, setBookActionMode] = useState<'create' | 'edit'>('create');
     const [bookToEdit, setBookToEdit] = useState(0);
-    const [bookStatus] = useState<'прочитана' | 'не прочитана' | 'отдана'>('не прочитана');
-
-    const [showAuthorDialog, setShowAuthorDialog] = useState(false);
+    const [bookStatus, setBookStatus] = useState<'прочитана' | 'не прочитана' | 'отдана'>('не прочитана');
+    const statusOptions = [
+        { text: 'не прочитана', value: 'не прочитана'},
+        { text: 'прочитана', value: ' прочитана'},
+        { text: 'отдана', value: 'отдана'},
+    ]        
 
     const [bookName, setBookName] = useState('');
     const [genreName, setGenreName] = useState('');
     const [showGenreDialog, setShowGenreDialog] = useState(false);
     const [bookAuthor, setBookAuthor] = useState('');
+    const [showAuthorDialog, setShowAuthorDialog] = useState(false);
     const [bookDescription, setBookDescription] = useState('');
 
     const navigate = useNavigate();
@@ -55,6 +61,7 @@ export const BooksPage: FC = () => {
                 ? books.find(e => e.id === bookToEdit) : undefined;
             setBookName(book?.name ?? '');
             setBookAuthor(book?.author ?? '');
+            setBookDescription(book?.description ?? '');
         }
     }, [books, bookActionMode, bookToEdit])
 
@@ -64,6 +71,7 @@ export const BooksPage: FC = () => {
         setBookName('');
         setBookAuthor('');
         setBookDescription('');
+        setBookStatus('не прочитана');
     }
 
     const createBookHandler = () => {
@@ -130,17 +138,23 @@ export const BooksPage: FC = () => {
 
     return (
         <Layout>
-            <Dialog title={bookActionMode !== 'edit' ? 'Добавить книгу' : 'Изменить книгу'}
-                        open={showBookDialog}
-                        onSave={saveBookDialogHandler}
-                        onCancel={closeBookDialogHandler}
-                    >
-                        <TextField labelText='Наименование' value={bookName} onChange={(val) => setBookName(val)} />
-                        <TextField labelText='Автор' value={bookAuthor} onChange={(val) => setBookAuthor(val)}/>
-                        {/*<TextField labelText='Статус' value={bookStatus} onChange={(val) => setBookStatus(val)}/>*/}
-                        <TextField labelText='Примечание' value={bookDescription} onChange={(val) => setBookDescription(val)}/>
-            </Dialog>
-            <Dialog title="Жанры"
+            {role === 'user' && (
+                <Dialog title={bookActionMode !== 'edit' ? 'Добавить книгу' : 'Изменить книгу'}
+                    open={showBookDialog}
+                    onSave={saveBookDialogHandler}
+                    onCancel={closeBookDialogHandler}
+                >
+                    <TextField labelText='Наименование' value={bookName} onChange={(val) => setBookName(val)} />
+                    <TextField labelText='Автор' value={bookAuthor} onChange={(val) => setBookAuthor(val)}/>
+                    <DropDown items={statusOptions} label="Статус книги:" 
+                        selectedChanged={(val) => setBookStatus(val as typeof bookStatus)}
+                        selectedValue={bookStatus}
+                    />
+                    <TextField labelText='Примечание' value={bookDescription} onChange={(val) => setBookDescription(val)}/>
+                </Dialog>
+            )}
+            
+            <Dialog title="Добавить жанр"
                 open={showGenreDialog}
                 onSave={() => {
                     dispatch(addGenre({
@@ -181,7 +195,7 @@ export const BooksPage: FC = () => {
                     onItemDelete={deleteBookHandler}
                     onItemEdit={editBookHandler}
                     />
-                    <Button text="Добавить книгу" className="book-page_add-book-btn" onClick={createBookHandler}/>
+                    {role ==='user' && (<Button text="Добавить книгу" className="book-page_add-book-btn" onClick={createBookHandler}/>)}
                 </div>
                 <div className='book-page_info-container'>
                     <div className='book-page_info-header'>
@@ -209,11 +223,16 @@ export const BooksPage: FC = () => {
                         <div className='book-page_add-info-data'>
                             <div className='book-page_add-info-data_cell'>
                                 <div className='book-page_list-title'>
-                                    <span className='book-page_label'> Жанры:</span>
-                                    {!!selectedBook && (
+                                    <span className='book-page_label'> Жанры</span>
+                                    {!!selectedBook && role === 'user' && (
                                         <PlusIcon onClick={() => setShowGenreDialog(true)}/>
                                     )}
                                 </div>
+                                <GenresList genresList={selectedBook?.genre ?? []} onDelete={(id) => {
+                                    if(window.confirm('Вы действительно хотите удалить данную запись о жанре?')) {
+                                        dispatch(deleteGenre(id));
+                                    }
+                                }}/>
                             </div>
                         </div>
                     </div>

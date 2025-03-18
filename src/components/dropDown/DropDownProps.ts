@@ -8,6 +8,7 @@ export interface DropDownItem {
 export interface DropDownProps {
     items: Array<DropDownItem>;
     selectedChanged?: (value: string) => void;
+    selectedValue: string;
     label?: string;
     lblWeight?: LabelWeight;
 }

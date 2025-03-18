@@ -3,9 +3,11 @@ import { BooksListProps } from './BooksListProps'
 import './booksListStyles.scss'
 import clsx from 'classnames'
 import { PencilIcon, TrashIcon } from '../../assets/icons';
+import { useAppSelector } from '../../hooks/reduxToolkitHooks';
 
 export const BooksList: FC<BooksListProps> = props => {
     const { booksList, onItemClick, onItemDelete, onItemEdit } = props;
+    const { role } = useAppSelector((state) => state.user);
     const [selectedBook, setSelectedBook] = useState(0);
 
     const bookClickHandler = (id: number) => {
@@ -32,11 +34,13 @@ export const BooksList: FC<BooksListProps> = props => {
                 onClick={() => bookClickHandler(book.id)}
                 >
                     <div>
-                        {`${book.name} ${book.genre}}`.trim()}
+                        {`${book.name}`.trim()}
                     </div>
                     <div className="books-list_item-actions">
-                        <PencilIcon width={18} height={18} onClick={() => {bookEditHandler(book.id)}} />
-                        <TrashIcon width={18} height={18} onClick={() => {bookDeleteHandler(book.id)}}/>
+                        {role === 'user' && (
+                            <><PencilIcon width={18} height={18} onClick={() => { bookEditHandler(book.id); } } />
+                            <TrashIcon width={18} height={18} onClick={() => { bookDeleteHandler(book.id); } } /></>
+                        )}
                     </div>
                 </div>
                 );

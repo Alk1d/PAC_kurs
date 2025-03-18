@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/reduxToolkitHooks
 import { useNavigate } from "react-router-dom";
 import { logOut } from "../../../store/slices/userSlice";
 import { MenuItem } from "../../userMenu/userMenuProps";
+import { RoutesPaths } from "../../../constants/commonConstants";
 
 export const Layout: FC<LayoutProps> = props => {
     const { footer, headerChild, title, children } = props;
@@ -16,6 +17,7 @@ export const Layout: FC<LayoutProps> = props => {
 
     const logOutHandler = () => {
         dispatch(logOut());
+        navigate(RoutesPaths.Login);
     }
 
     const exitMenuItem: MenuItem = {

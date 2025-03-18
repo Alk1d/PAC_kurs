@@ -1,0 +1,57 @@
+@import '../../styles/variables.scss';
+
+.genres-list {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+
+    &_item {
+        min-height: 40px;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        cursor: pointer;
+        padding: 10px 10px;
+        color: $color-baseblack;
+        font-size: 16px;
+        font-weight: 500;
+        border-bottom: 1px solid $color-dirtywhite;
+        box-shadow: 0px 1px 1px -1px $color-delimitershadow
+
+        &_selected {
+            background-color: #eaf3ff4d;
+        }
+
+        &:hover {
+            background-color: #f5f5f533;
+        }
+    }
+
+    &_item-desc {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &_item-desc-description {
+        font-style: italic;
+    }
+
+    &_item-fio {
+        display: flex;
+    }
+
+    &_item-actions {
+        display: flex;
+        gap: 8px;
+        margin-left: auto;
+        min-width: 44px;
+        max-width: 44px;
+
+        & svg {
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+}

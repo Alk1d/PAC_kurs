@@ -4,7 +4,7 @@ import './dropDownStyles.scss'
 import clsx from "classnames"
 
 export const DropDown: FC<DropDownProps> = props => {
-    const { items, label, lblWeight, selectedChanged } = props;
+    const { items, label, lblWeight, selectedChanged, selectedValue } = props;
 
     const selectedChangedHandler = (event: ChangeEvent<HTMLSelectElement>) => {
         selectedChanged && selectedChanged(event.target.value)
@@ -19,7 +19,7 @@ export const DropDown: FC<DropDownProps> = props => {
                     {label}
                 </label>
                 )}
-                <select className="drop-down_select" onChange={selectedChangedHandler}>
+                <select className="drop-down_select" onChange={selectedChangedHandler} value={selectedValue} >
                     {items.map((item, idx) => {
                         return (
                             <option key={idx} value={item.value}>{item.text}</option>
