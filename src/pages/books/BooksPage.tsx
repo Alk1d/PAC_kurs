@@ -1,16 +1,13 @@
 import { FC, useEffect, useState } from 'react';
 import { Layout } from "../../components/layouts"
 import './booksPageStyles.scss'
-import { Button, Dialog, DropDown, BooksList, TextField } from '../../components';
-import { Book, Author, Genre } from '../../types/models';
-import { DropDownItem } from '../../components/dropDown/DropDownProps';
-import { PencilIcon, PlusIcon, TrashIcon, UploadIcon } from '../../assets/icons';
+import { Button, Dialog, DropDown, BooksList, GenresList, TextField } from '../../components';
+import { Book } from '../../types/models';
+import { PlusIcon} from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxToolkitHooks';
 import { useNavigate } from 'react-router-dom';
 import { RoutesPaths } from '../../constants/commonConstants';
-import { getBooks, addBook, editBook, deleteBook, addGenre, editGenre, deleteGenre, addAuthor, editAuthor, deleteAuthor  } 
-    from '../../services';
-import { GenresList } from '../../components/genresList';
+import { getBooks, addBook, editBook, deleteBook, addGenre, deleteGenre, addAuthor  }  from '../../services';
 
 export const BooksPage: FC = () => {
     const { role, accessToken } = useAppSelector((state) => state.user);

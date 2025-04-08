@@ -22,8 +22,25 @@
         box-shadow: $shadow;
     }
 
-    &_user-menu {
+    &_menu {
         margin-left: auto;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        & svg {
+            &:hover {
+                cursor: pointer;
+                opacity: 0.8;
+            }
+        }
+    }
+    &_user {
+        min-height: 32px;
+        min-width: 32px;
+    }
+    &_model {
+        min-height: 32px;
+        min-width: 32px;
     }
 
     &_body {

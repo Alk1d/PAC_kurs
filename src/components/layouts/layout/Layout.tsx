@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { LayoutProps } from "./LayoutProps";
 import './layoutStyles.scss'
 import { LogoIcon } from "../../../assets/icons/Logoicon";
@@ -8,12 +8,19 @@ import { useNavigate } from "react-router-dom";
 import { logOut } from "../../../store/slices/userSlice";
 import { MenuItem } from "../../userMenu/userMenuProps";
 import { RoutesPaths } from "../../../constants/commonConstants";
+import { PencilIcon } from "../../../assets/icons"; 
+import { Dialog } from "../../dialog";
+import { TextField } from "../../textField";
 
 export const Layout: FC<LayoutProps> = props => {
     const { footer, headerChild, title, children } = props;
     const { role } = useAppSelector((state) => state.user);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
+    const [showModelDialog, setShowModelDialog] = useState(false);
+    const [prompt, setPrompt] = useState("");
+    const [generatedText, setGeneratedText] = useState("");
 
     const logOutHandler = () => {
         dispatch(logOut());
@@ -26,8 +33,36 @@ export const Layout: FC<LayoutProps> = props => {
         label: 'Выйти'
     };
 
+    const showModelDialogHandler = () => {
+        setShowModelDialog(true);
+    }
+
+    const generateTextHandler = async () => {
+        const response = await fetch('http://localhost:5000/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, max_tokens: 500 })
+        });
+        const data = await response.json();
+        setGeneratedText(data.generated_text);
+    }
+
+    const closeDialog = () => {
+        setShowModelDialog(false);
+        setPrompt("");
+        setGeneratedText("");
+    }
+
     return (
         <div className="layout">
+            <Dialog title={"Model generate"}
+                                open={showModelDialog}
+                                onSave={generateTextHandler}
+                                onCancel={closeDialog}
+                            >
+                                <TextField labelText='Промпт' value={prompt} onChange={(val) => setPrompt(val)} />
+                                <textarea value={generatedText}/>
+                            </Dialog>
             <div className="layout_header">
                 <div>
                     <LogoIcon />
@@ -36,8 +71,13 @@ export const Layout: FC<LayoutProps> = props => {
                     <div>{title ?? "Учет личной библиотеки"}</div>
                     <div>{headerChild}</div>
                 </div>
-                <div className="layout_user-menu">
+                <div className="layout_menu">
+                    <div className="layout_menu-model">
+                        <PencilIcon onClick={showModelDialogHandler}/>
+                    </div>
+                    <div className="layout_menu-user">
                     <UserMenu items={role === 'user' ? [exitMenuItem] : [exitMenuItem]} />
+                    </div>
                 </div>
             </div>
             <div className="layout_body">

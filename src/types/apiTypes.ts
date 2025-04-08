@@ -53,3 +53,11 @@ export interface UpdateGenreResponseDto {
     id: number;
     name: string;
 }
+
+export interface AiRequestDto {
+    prompt: string;
+}
+
+export interface AiResponseDto {
+    response: string;
+}
